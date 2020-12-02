@@ -1,24 +1,7 @@
-const fs = require('fs');
-const readline = require('readline');
-
-// https://stackoverflow.com/questions/6156501/read-a-file-one-line-at-a-time-in-node-js
-async function proccessIntoList(file, parseFunc) {
-    const fileStream = fs.createReadStream(file);
-
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const list = [];
-    for await (const line of rl) {
-        list.push(parseFunc(line));
-    }
-    return list;
-}
+const fileToList = require('../utils/fileToList');
 
 async function solveProblem() {
-    const list = await proccessIntoList('input1.txt', Number.parseInt);
+    const list = await fileToList('input1.txt', Number.parseInt);
     list.sort();
 
     for (let i = 0; i < list.length; i++) {
