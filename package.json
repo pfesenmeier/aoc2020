@@ -1,0 +1,11 @@
+{
+  "name": "aoc2020",
+  "version": "1.0.0",
+  "description": "workspace for aoc2020",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "pbfesenmeier",
+  "license": "ISC"
+}
