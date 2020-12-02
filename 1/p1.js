@@ -1,4 +1,4 @@
-const fileToList = require('../utils/fileToList');
+const fileToList = require('../tsUtils/fileToList');
 
 async function solveProblem() {
     const list = await fileToList('input1.txt', Number.parseInt);
