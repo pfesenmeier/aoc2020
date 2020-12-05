@@ -63,21 +63,31 @@ function isValidPassport(p: Passport): boolean {
 }
 
 function read(list: string[], count = 0, passport: Partial<Passport> = {}): number {
-    if (list.length === 0) return count;
-    if (list[0] === '') {
+    const [currentLine, ...restOfList] = list;
+
+    if (currentLine === undefined) return count;
+    if (currentLine === '') {
         if (isPassport(passport) && isValidPassport(passport)) {
-            return read(list.slice(1), ++count);
+            return read(restOfList, ++count);
         }
-        return read(list.slice(1), count);
+        
+        return read(restOfList, count);
     }
-    const keyColonValues: string[] = list[0].split(' ');
-    for (const keyColonValue of keyColonValues) {
-        const results = keyColonValue.match(/^(\w+):(\S+)$/);
-        if (results === null) throw new Error('regex failed!');
-        const [, key, value] = results;
-        Object.assign(passport, { [key]: value });
-    }
-    return read(list.slice(1), count, passport);
+
+    currentLine
+        .split(' ')
+        .forEach(keyColonValue => {
+            const results = keyColonValue.match(/^(\w+):(\S+)$/);
+
+            if (results === null) {
+                throw new Error('regex failed!');
+            }
+                
+            const [, key, value] = results;
+            Object.assign(passport, { [key]: value });
+        });
+
+    return read(restOfList, count, passport);
 }
 
 console.log(read(list));
