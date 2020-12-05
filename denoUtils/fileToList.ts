@@ -7,15 +7,17 @@ interface ParseFunc<T> {
     (line: string): T;
 }
 
-// https://stackoverflow.com/questions/6156501/read-a-file-one-line-at-a-time-in-node-js
-export default async function proccessFileIntoList<T>(file: string, parseFunc: ParseFunc<T>): Promise<T[]> {
-    const filename = path.join(Deno.cwd(), file);
-    const fileReader = await Deno.open(filename);
+// https://deno.land/std@0.79.0/examples/cat.ts
+export async function fileToList<T>(fileName: string, parseFunc: ParseFunc<T>): Promise<T[]> {
+    const filePath = path.join(Deno.cwd(), fileName);
+    const file = await Deno.open(filePath);
     
     const list: Array<T> = [];
-    for await (const line of readLines(fileReader)) {
+    for await (const line of readLines(file)) {
       list.push(parseFunc(line));
     }
 
+    file.close();
+    
     return list;
 }

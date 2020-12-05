@@ -5,7 +5,7 @@ interface ParseFunc<T> {
     (line: string): T;
 }
 
-export default async function proccessFileIntoList<T>(url: string, parseFunc: ParseFunc<T>): Promise<T[]> {
+export async function remoteFileToList<T>(url: string, parseFunc: ParseFunc<T>): Promise<T[]> {
     const res = await fetch(url);
     const reader = readerFromStreamReader(res.body!.getReader());
 
