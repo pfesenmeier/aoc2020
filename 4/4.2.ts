@@ -15,7 +15,7 @@ interface Passport {
 
 const eyeColors = {
     amb: true,
-    blue: true,
+    blu: true,
     brn: true,
     gry: true,
     grn: true,
@@ -33,7 +33,7 @@ function isPassport(creds: Partial<Passport>): creds is Passport {
          creds.pid !== undefined;
 }
 
-function validatePassport(p: Passport): boolean {
+function isValidPassport(p: Passport): boolean {
     const byr = parseInt(p.byr);
     if (byr === undefined || byr > 2002 || byr < 1920) return false;
 
@@ -43,12 +43,10 @@ function validatePassport(p: Passport): boolean {
     const eyr = parseInt(p.eyr);
     if (eyr === undefined || eyr < 2020 || eyr > 2030) return false;
 
-    // no decimals
-    const hgt = p.hgt.match(/(\d+)(in|cm)/);
+    const hgt = p.hgt.match(/^(\d+)(in|cm)$/);
     if (hgt === null) return false;
     const [,num,unit] = hgt;
     const n: number = parseInt(num);
-    if (n === undefined) return false;
     if (unit === 'in' && (n > 76 || n < 59)) return false;
     if (unit === 'cm' && (n > 193 || n < 150)) return false;
 
@@ -58,7 +56,6 @@ function validatePassport(p: Passport): boolean {
     const ecl = p.ecl;
     if (!(ecl in eyeColors)) return false;
 
-    // assuming integers
     const pid = p.pid.match(/^[0-9]{9}$/);
     if (pid === null) return false;
 
@@ -68,14 +65,14 @@ function validatePassport(p: Passport): boolean {
 function read(list: string[], count = 0, passport: Partial<Passport> = {}): number {
     if (list.length === 0) return count;
     if (list[0] === '') {
-        if (isPassport(passport) && validatePassport(passport)) {
+        if (isPassport(passport) && isValidPassport(passport)) {
             return read(list.slice(1), ++count);
         }
         return read(list.slice(1), count);
     }
     const keyColonValues: string[] = list[0].split(' ');
     for (const keyColonValue of keyColonValues) {
-        const results = keyColonValue.match(/(\w+):(\S+)/);
+        const results = keyColonValue.match(/^(\w+):(\S+)$/);
         if (results === null) throw new Error('regex failed!');
         const [, key, value] = results;
         Object.assign(passport, { [key]: value });
