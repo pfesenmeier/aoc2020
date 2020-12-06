@@ -21,8 +21,13 @@ export interface LineProcessFunc<T> {
   (line: string): Dict<T>;
 }
 
+export interface AggregateFunc<T> {
+  (aggregate: Dict<T>, current: Dict<T>): Dict<T>;
+}
+
 export function listProcessFactoryFactory<T>(
   lineProcessFunc: LineProcessFunc<T>,
+  aggregateFunc: AggregateFunc<T>,
 ): ListProcessFunc<T> {
   return (
     function processList(
@@ -40,23 +45,28 @@ export function listProcessFactoryFactory<T>(
         );
       }
 
-      const lineValues = lineProcessFunc(currentLine);
-      Object.assign(currentGroup, lineValues);
-
       return processList(
         restOfLines,
         processedList,
-        currentGroup,
+        aggregateFunc(currentGroup, lineProcessFunc(currentLine)),
       );
     }
   );
 }
 
-const getAllResponses: LineProcessFunc<boolean> = (line: string) =>
+const getLineResponses: LineProcessFunc<boolean> = (line: string) =>
   line.split("")
     .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
 
-const sumAnswers = listProcessFactoryFactory(getAllResponses)(list)
+const aggregateAllResonses: AggregateFunc<boolean> = (
+  aggregate: Dict<boolean>,
+  current: Dict<boolean>,
+) => Object.assign(aggregate, current);
+
+const sumAnswers = listProcessFactoryFactory(
+  getLineResponses,
+  aggregateAllResonses,
+)(list)
   .map((group) => Object.keys(group).length)
   .reduce((count, current) => count + current);
 
