@@ -1,7 +1,7 @@
-import { remoteFileToList } from "../denoUtils/remoteFileToList.ts";
+import { remoteFileToList } from "../denoUtils/mod.ts";
 
-const list = await remoteFileToList(
-  "https://raw.githubusercontent.com/pfesenmeier/aoc2020/master/input/6.txt",
+export const list = await remoteFileToList(
+  "https://raw.githubusercontent.com/pfesenmeier/aoc2020/master/input/5example.txt",
   String,
 );
 
@@ -25,7 +25,7 @@ export interface AggregateFunc<T> {
   (aggregate: Dict<T>, current: Dict<T>): Dict<T>;
 }
 
-export function listProcessFactoryFactory<T>(
+export function listProcessFactory<T>(
   lineProcessFunc: LineProcessFunc<T>,
   aggregateFunc: AggregateFunc<T>,
 ): ListProcessFunc<T> {
@@ -54,18 +54,19 @@ export function listProcessFactoryFactory<T>(
   );
 }
 
+export const lineToObj: LineProcessFunc<boolean> = (line: string) =>
+  line.split("")
+    .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
+
 function main() {
-  const getLineResponses: LineProcessFunc<boolean> = (line: string) =>
-    line.split("")
-      .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
 
   const aggregateAllResonses: AggregateFunc<boolean> = (
     aggregate: Dict<boolean>,
     current: Dict<boolean>,
   ) => Object.assign(aggregate, current);
 
-  const sumAnswers = listProcessFactoryFactory(
-    getLineResponses,
+  const sumAnswers = listProcessFactory(
+    lineToObj,
     aggregateAllResonses,
   )(list)
     .map((group) => Object.keys(group).length)
