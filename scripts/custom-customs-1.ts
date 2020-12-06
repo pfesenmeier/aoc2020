@@ -9,31 +9,54 @@ type Dict<T> = {
   [key: string]: T;
 };
 
-export function groupAnswers(
-  list: string[],
-  processedList: Dict<boolean>[] = [],
-  currentGroup: Dict<boolean> = {},
-): Dict<boolean>[] {
-  if (list.length === 0) return processedList;
-  const [currentLine, ...restOfLines] = list;
+interface ListProcessFunc<T> {
+  (
+    list: string[],
+    processedList?: Dict<T>[],
+    currentGroup?: Dict<T>,
+  ): Dict<T>[];
+}
 
-  if (currentLine === "") {
-    return groupAnswers(
-      restOfLines,
-      processedList.concat(currentGroup),
-    );
-  }
+interface LineProcessFunc<T> {
+  (line: string): Dict<T>;
+}
 
-  currentLine.split("").map((letter) => currentGroup[letter] = true);
+function groupAnswersFactory<T>(
+  lineProcessFunc: LineProcessFunc<T>,
+): ListProcessFunc<T> {
+  return (
+    function groupAnswers(
+      list: string[],
+      processedList = [],
+      currentGroup = {},
+    ): Dict<T>[] {
+      if (list.length === 0) return processedList;
+      const [currentLine, ...restOfLines] = list;
 
-  return groupAnswers(
-    restOfLines,
-    processedList,
-    currentGroup,
+      if (currentLine === "") {
+        return groupAnswers(
+          restOfLines,
+          processedList.concat(currentGroup),
+        );
+      }
+
+      const lineValues = lineProcessFunc(currentLine);
+      Object.assign(currentGroup, lineValues);
+
+      return groupAnswers(
+        restOfLines,
+        processedList,
+        currentGroup,
+      );
+    }
   );
 }
 
-const sumAnswers = groupAnswers(list)
+const getAllResponses: LineProcessFunc<boolean> = (line: string) =>
+  line.split("")
+    .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
+
+const sumAnswers = groupAnswersFactory(getAllResponses)(list)
   .map((group) => Object.keys(group).length)
   .reduce((count, current) => count + current);
 
