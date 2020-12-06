@@ -5,11 +5,11 @@ const list = await remoteFileToList(
   String,
 );
 
-type Dict<T> = {
+export type Dict<T> = {
   [key: string]: T;
 };
 
-interface ListProcessFunc<T> {
+export interface ListProcessFunc<T> {
   (
     list: string[],
     processedList?: Dict<T>[],
@@ -17,15 +17,15 @@ interface ListProcessFunc<T> {
   ): Dict<T>[];
 }
 
-interface LineProcessFunc<T> {
+export interface LineProcessFunc<T> {
   (line: string): Dict<T>;
 }
 
-function groupAnswersFactory<T>(
+export function listProcessFactoryFactory<T>(
   lineProcessFunc: LineProcessFunc<T>,
 ): ListProcessFunc<T> {
   return (
-    function groupAnswers(
+    function processList(
       list: string[],
       processedList = [],
       currentGroup = {},
@@ -34,7 +34,7 @@ function groupAnswersFactory<T>(
       const [currentLine, ...restOfLines] = list;
 
       if (currentLine === "") {
-        return groupAnswers(
+        return processList(
           restOfLines,
           processedList.concat(currentGroup),
         );
@@ -43,7 +43,7 @@ function groupAnswersFactory<T>(
       const lineValues = lineProcessFunc(currentLine);
       Object.assign(currentGroup, lineValues);
 
-      return groupAnswers(
+      return processList(
         restOfLines,
         processedList,
         currentGroup,
@@ -56,7 +56,7 @@ const getAllResponses: LineProcessFunc<boolean> = (line: string) =>
   line.split("")
     .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
 
-const sumAnswers = groupAnswersFactory(getAllResponses)(list)
+const sumAnswers = listProcessFactoryFactory(getAllResponses)(list)
   .map((group) => Object.keys(group).length)
   .reduce((count, current) => count + current);
 
