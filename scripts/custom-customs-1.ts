@@ -54,20 +54,24 @@ export function listProcessFactoryFactory<T>(
   );
 }
 
-const getLineResponses: LineProcessFunc<boolean> = (line: string) =>
-  line.split("")
-    .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
+function main() {
+  const getLineResponses: LineProcessFunc<boolean> = (line: string) =>
+    line.split("")
+      .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
 
-const aggregateAllResonses: AggregateFunc<boolean> = (
-  aggregate: Dict<boolean>,
-  current: Dict<boolean>,
-) => Object.assign(aggregate, current);
+  const aggregateAllResonses: AggregateFunc<boolean> = (
+    aggregate: Dict<boolean>,
+    current: Dict<boolean>,
+  ) => Object.assign(aggregate, current);
 
-const sumAnswers = listProcessFactoryFactory(
-  getLineResponses,
-  aggregateAllResonses,
-)(list)
-  .map((group) => Object.keys(group).length)
-  .reduce((count, current) => count + current);
+  const sumAnswers = listProcessFactoryFactory(
+    getLineResponses,
+    aggregateAllResonses,
+  )(list)
+    .map((group) => Object.keys(group).length)
+    .reduce((count, current) => count + current);
 
-console.log(sumAnswers);
+  console.log(sumAnswers);
+}
+
+if (import.meta.main) main();
