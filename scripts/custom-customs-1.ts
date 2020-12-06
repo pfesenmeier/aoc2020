@@ -10,7 +10,7 @@ type Dict<T> = {
 };
 
 export function groupAnswers(
-  list: string[] = [],
+  list: string[],
   processedList: Dict<boolean>[] = [],
   currentGroup: Dict<boolean> = {},
 ): Dict<boolean>[] {
@@ -26,4 +26,9 @@ export function groupAnswers(
   return groupAnswers(restOfLines, processedList, currentGroup);
 }
 
-console.log(groupAnswers(list));
+const sumAnswers = groupAnswers(list)
+                 .map(group => Object.keys(group).length)
+                 .reduce((count, current) => count + current);
+
+console.log(sumAnswers);
+ 
