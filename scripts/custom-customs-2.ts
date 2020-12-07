@@ -8,34 +8,35 @@ import {
 
 
 const aggregateSharedResponses: AggregateFunc<boolean> = (
-  aggregateGroup: Dict<boolean>, //group
-  currentGroup: Dict<boolean>, //line
+  aggregateCandidates,
+  currentCustomsForm,
 ) => {
-  const aggKeys = Object.keys(aggregateGroup);
-  // return. if at end, return {}
-  if (aggKeys.length === 0) {
-    return currentGroup;
+  const matchedKeys = Object.keys(aggregateCandidates[0]);
+  const unmatchedKeys = Object.keys(aggregateCandidates[1]);
+
+  console.log('matched : ' + matchedKeys + 'unmatched: ' + unmatchedKeys);
+
+  if (unmatchedKeys.length + matchedKeys.length === 0) {
+    console.log('first form');
+    return [{},currentCustomsForm];
   }
 
-  const commonKeys = Object.keys(currentGroup)
+  const commonKeys = Object.keys(currentCustomsForm)
   .reduce((commonKeys, key) => {
-      console.log('common ' + Object.keys(commonKeys));
-      console.log('key' + key);
-      console.log('agg ' + Object.keys(aggregateGroup))
-      if (key in aggregateGroup) {
+      if (key in matchedKeys.concat(unmatchedKeys)) {
         commonKeys[key] = true;
       }
       return commonKeys;
     }, {} as Dict<boolean>);
-  console.log('result ' + Object.keys(commonKeys));
-  return commonKeys;
+  console.log('commonKeys: ' + Object.keys(commonKeys));
+  return [commonKeys, {}];
 };
 
 function main() {
   const sumAnswers = listProcessFactory(
       lineToObj,
       aggregateSharedResponses,
-  )(list)
+  )(list.slice(0,14))
     .map((group) => {console.log(group); return group})
     .map((group) => {console.log(Object.keys(group).length); return Object.keys(group).length;})
     .reduce((count, current) => count + current, 0);

@@ -22,7 +22,7 @@ export interface LineProcessFunc<T> {
 }
 
 export interface AggregateFunc<T> {
-  (aggregate: Dict<T>, current: Dict<T>): Dict<T>;
+  (aggregate: [Dict<T>,Dict<T>], current: Dict<T>): [Dict<T>,Dict<T>];
 }
 
 export function listProcessFactory<T>(
@@ -34,6 +34,7 @@ export function listProcessFactory<T>(
       list: string[],
       processedList = [],
       currentGroup = {},
+      currentUnmatchedGroup = {},
     ): Dict<T>[] {
       if (list.length === 0) return processedList;
       const [currentLine, ...restOfLines] = list;
@@ -44,11 +45,14 @@ export function listProcessFactory<T>(
           processedList.concat(currentGroup),
         );
       }
-
+      const lineDict = lineProcessFunc(currentLine);
+      
+      const [matched, unmatched] = aggregateFunc([currentGroup, currentUnmatchedGroup], lineDict);
       return processList(
         restOfLines,
         processedList,
-        aggregateFunc(currentGroup, lineProcessFunc(currentLine)),
+        matched,
+        unmatched,
       );
     }
   );
@@ -58,21 +62,21 @@ export const lineToObj: LineProcessFunc<boolean> = (line: string) =>
   line.split("")
     .reduce((obj, letter) => Object.assign(obj, { [letter]: true }), {});
 
-function main() {
+// function main() {
 
-  const aggregateAllResonses: AggregateFunc<boolean> = (
-    aggregate: Dict<boolean>,
-    current: Dict<boolean>,
-  ) => Object.assign(aggregate, current);
+//   const aggregateAllResonses: AggregateFunc<boolean> = (
+//     aggregate: Dict<boolean>,
+//     current: Dict<boolean>,
+//   ) => Object.assign(aggregate, current);
 
-  const sumAnswers = listProcessFactory(
-    lineToObj,
-    aggregateAllResonses,
-  )(list)
-    .map((group) => Object.keys(group).length)
-    .reduce((count, current) => count + current);
+//   const sumAnswers = listProcessFactory(
+//     lineToObj,
+//     aggregateAllResonses,
+//   )(list)
+//     .map((group) => Object.keys(group).length)
+//     .reduce((count, current) => count + current);
 
-  console.log(sumAnswers);
-}
+//   console.log(sumAnswers);
+// }
 
-if (import.meta.main) main();
+// if (import.meta.main) main();
