@@ -5,13 +5,15 @@ const list = await remoteFileToList(
   String,
 );
 
+type BagDictionary = Record<string, Record<string, number>[]>;
+
 const regexPattern =
   /(?:(?:^([a-z]+ [a-z]+) bags contain ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,](?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?(?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?(?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?$)|^([a-z]+ [a-z]+) bags contain (no) other bags.$)/;
 
 function createBagDictionary(
   list: string[],
-  dictionary: Record<string, Record<string, number>> = {},
-): Record<string, Record<string, number>> | undefined {
+  dictionary: BagDictionary = {},
+): BagDictionary | undefined {
   const [currentLine, ...restOfLines] = list;
   if (currentLine === "") return dictionary;
 
@@ -52,4 +54,65 @@ function createBagDictionary(
   return createBagDictionary(restOfLines, Object.assign(dictionary, newBag));
 }
 
-console.log(createBagDictionary(list));
+const dictionary = createBagDictionary(list)!;
+
+const allBags: string[] = Object.keys(dictionary);
+
+function goldInBag(bagName: string): boolean | undefined {
+  if (bagName === 'shiny gold') return true;
+  console.log(bagName);
+
+  const contents = dictionary[bagName];
+  if (contents.length === 0) return false;
+
+  for (const bag of contents) {
+    if(goldInBag(Object.keys(bag)[0])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const listOfBooleans = allBags.map(bag => goldInBag(bag));
+
+console.log(listOfBooleans);
+
+// blue, gold, green
+// function goldInBag(bagsToSearch: string[]): boolean {
+//   // if node
+//   if (bagsToSearch.length === 0) return false;
+
+//   let hasBag = false;
+//   // if branch
+//   for (const bag of bagsToSearch) {
+//     // check nodes
+//     // if empty
+//     // if gold
+//     console.log("bag name? " + bag);
+//     if (bag === "shiny gold") return true;
+//     // not gold, blue maybe?
+//     const nextBags = dictionary[bag];
+//     if (!nextBags) hasBag = false;
+//     hasBag = goldInBag(Object.keys(nextBags));
+//   }
+//   return hasBag;
+// }
+
+// const listOfBooleans = allBags.map((bag) => {
+//   const innerBags = dictionary[bag];
+//   if (innerBags.length === 0) return false;
+//   const innerBagNames = innerBags.reduce(
+//     (tot, cur) => tot.concat(Object.keys(cur)),
+//     [] as string[],
+//   );
+//   goldInBag(innerBagNames);
+// });
+
+// console.log(listOfBooleans);
+// function findGold(unCheckedBags: string[], hasGold: string[], hasntGold: string[]) {
+//   for (const bag of unCheckedBags) {
+//     if (hasGold.includes(bag)) {
+
+//     }
+//   }
+// }
