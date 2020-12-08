@@ -1,6 +1,6 @@
 import { remoteFileToList } from "../denoUtils/remoteFileToList.ts";
 
-const list = await remoteFileToList(
+export const list = await remoteFileToList(
   "https://raw.githubusercontent.com/pfesenmeier/aoc2020/master/input/7.txt",
   String,
 );
@@ -10,7 +10,7 @@ type BagDictionary = Record<string, Record<string, number>[]>;
 const regexPattern =
   /(?:(?:^([a-z]+ [a-z]+) bags contain ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,](?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?(?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?(?: ([0-9]+) ([a-z]+ [a-z]+) bags?[\.,])?$)|^([a-z]+ [a-z]+) bags contain (no) other bags.$)/;
 
-function createBagDictionary(
+export function createBagDictionary(
   list: string[],
   dictionary: BagDictionary = {},
 ): BagDictionary | undefined {
@@ -57,7 +57,6 @@ function createBagDictionary(
 const dictionary = createBagDictionary(list)!;
 
 const allBags: string[] = Object.keys(dictionary);
-console.log(allBags);
 
 function goldInBag(bagName: string): boolean {
   if (bagName === 'shiny gold') return true;
@@ -73,8 +72,12 @@ function goldInBag(bagName: string): boolean {
   return false;
 }
 
-const listOfBooleans = allBags
-                         .map(bag => goldInBag(bag))
-                         .reduce((sum, current) => current ? ++sum : sum, 0);
+function main() {
+  const listOfBooleans = allBags
+  .map(bag => goldInBag(bag))
+  .reduce((sum, current) => current ? ++sum : sum, 0);
+  
+  console.log(listOfBooleans);
+}
 
-console.log(listOfBooleans);
+if (import.meta.main) main();
