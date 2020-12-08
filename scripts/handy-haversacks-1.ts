@@ -57,10 +57,10 @@ function createBagDictionary(
 const dictionary = createBagDictionary(list)!;
 
 const allBags: string[] = Object.keys(dictionary);
+console.log(allBags);
 
-function goldInBag(bagName: string): boolean | undefined {
+function goldInBag(bagName: string): boolean {
   if (bagName === 'shiny gold') return true;
-  console.log(bagName);
 
   const contents = dictionary[bagName];
   if (contents.length === 0) return false;
@@ -73,46 +73,8 @@ function goldInBag(bagName: string): boolean | undefined {
   return false;
 }
 
-const listOfBooleans = allBags.map(bag => goldInBag(bag));
+const listOfBooleans = allBags
+                         .map(bag => goldInBag(bag))
+                         .reduce((sum, current) => current ? ++sum : sum, 0);
 
 console.log(listOfBooleans);
-
-// blue, gold, green
-// function goldInBag(bagsToSearch: string[]): boolean {
-//   // if node
-//   if (bagsToSearch.length === 0) return false;
-
-//   let hasBag = false;
-//   // if branch
-//   for (const bag of bagsToSearch) {
-//     // check nodes
-//     // if empty
-//     // if gold
-//     console.log("bag name? " + bag);
-//     if (bag === "shiny gold") return true;
-//     // not gold, blue maybe?
-//     const nextBags = dictionary[bag];
-//     if (!nextBags) hasBag = false;
-//     hasBag = goldInBag(Object.keys(nextBags));
-//   }
-//   return hasBag;
-// }
-
-// const listOfBooleans = allBags.map((bag) => {
-//   const innerBags = dictionary[bag];
-//   if (innerBags.length === 0) return false;
-//   const innerBagNames = innerBags.reduce(
-//     (tot, cur) => tot.concat(Object.keys(cur)),
-//     [] as string[],
-//   );
-//   goldInBag(innerBagNames);
-// });
-
-// console.log(listOfBooleans);
-// function findGold(unCheckedBags: string[], hasGold: string[], hasntGold: string[]) {
-//   for (const bag of unCheckedBags) {
-//     if (hasGold.includes(bag)) {
-
-//     }
-//   }
-// }
