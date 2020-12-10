@@ -1,6 +1,6 @@
 import { remoteFileToList } from "../denoUtils/mod.ts";
 
-const list = await remoteFileToList(
+export const list = await remoteFileToList(
   "https://raw.githubusercontent.com/pfesenmeier/aoc2020/master/input/9.txt",
   Number,
 );
@@ -39,6 +39,6 @@ function checkManyNumbersAgaintAllNumbers(
   return checkManyNumbersAgaintAllNumbers(preamble.slice(1), desiredSum);
 }
 
-const answer = makeMatcher(25)(list);
+export const answer = makeMatcher(25)(list);
 
 console.log(answer);
