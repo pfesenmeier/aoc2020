@@ -29,11 +29,13 @@ function checkManyNumbersAgaintAllNumbers(
 ): boolean {
   if (preamble.length === 1) return false;
   const [currentNumberToTest, ...restOfNumbers] = preamble;
+
   let findMatch = false;
-  restOfNumbers.forEach((number) => {
+  restOfNumbers.some((number) => {
     if (number + currentNumberToTest === desiredSum) {
       findMatch = true;
     }
+    return findMatch;
   });
   if (findMatch) return findMatch;
   return checkManyNumbersAgaintAllNumbers(preamble.slice(1), desiredSum);
@@ -41,4 +43,5 @@ function checkManyNumbersAgaintAllNumbers(
 
 export const answer = makeMatcher(25)(list);
 
-console.log(answer);
+const main = () => console.log(answer);
+if (import.meta.main) main();
