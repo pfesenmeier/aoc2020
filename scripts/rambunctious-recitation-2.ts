@@ -1,25 +1,30 @@
-const history = "6,3,15,13,1,0".split(",").map((num) => parseInt(num));
+import { difference } from "https://deno.land/std@0.81.0/datetime/mod.ts";
 
+const start = new Date();
 
-while (history.length < 30000000) {
-  console.log(history.length);
-  const lastNum = history[history.length - 1];
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf
-  const indices = [];
-  let idx = history.lastIndexOf(lastNum);
-  while (idx !== -1 && indices.length < 2) {
-    indices.push(idx);
-    idx = history.lastIndexOf(lastNum, idx - 1);
-  }
-  if (indices.length === 0) throw Error("something happened");
-  if (indices.length === 1) {
-    history.push(0);
-  } else {
-    const lastOccurance = indices[0];
-    const penultimateOccurance = indices[1];
+const input = "6,3,15,13,1,0";
+const history = input.split(",");
+const lookup = input.split(",").reduce((acc, cur, index) => {
+  acc[cur] = index + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+let length: number = history.length;
+let value: string = history[length - 1];
+
+while (length < 30000000) {  // add more elements
+  const lastOccurance = lookup[value];
   
-    history.push(lastOccurance - penultimateOccurance);
+  if (lastOccurance === undefined) {
+    lookup[value] = length;
+    value = '0';
+  } else {
+    const diff = length - lastOccurance;
+    lookup[value] = length;
+    value = diff.toString();
   }
+  ++length;
 }
-
-console.log(history[history.length - 1]);
+const end = new Date();
+console.log(value);
+console.log(difference(start, end, { units: ['seconds'] }));
