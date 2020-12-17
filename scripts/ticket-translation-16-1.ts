@@ -4,11 +4,13 @@ import { assert } from "https://deno.land/std@0.81.0/testing/asserts.ts";
 class fieldRule {
   type = "fieldRule";
   constructor(public name: string, private ranges: number[][]) {
-    ranges.forEach((range) => assert(range.length === 2));
+    ranges.forEach((range) =>
+      assert(range.length === 2 && range[0] < range[1])
+    );
   }
 
   isValid = (field: number) =>
-    this.ranges.every((range) => field >= range[0] && field <= range[1]);
+    this.ranges.some((range) => field >= range[0] && field <= range[1]);
 }
 
 class ticket {
@@ -37,18 +39,20 @@ function matchRegexp(line: string): fieldRule | ticket | "" {
 
 const file = await fileToList("./input/16.txt", matchRegexp);
 
-
 const rules = file.filter((line) =>
   line !== "" && line.type === "fieldRule"
 ) as fieldRule[];
 const tickets = file.filter((line) =>
   line !== "" && line.type === "ticket"
-) as ticket[];
+  // remove my ticket
+).slice(1) as ticket[];
+
 
 const rating = tickets.map((ticket) => {
   const fields = ticket.getFields();
-  return fields.reduce(
-    (acc, cur) => rules.some((rule) => !rule.isValid(cur)) ? acc + cur : acc,
+  return fields
+    .reduce(
+    (acc, cur) => !rules.some((rule) => rule.isValid(cur)) ? acc + cur: acc,
     0,
   );
 }).reduce((acc, cur) => cur + acc, 0);
