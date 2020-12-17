@@ -22,7 +22,7 @@ class ticket {
 
 function matchRegexp(line: string): fieldRule | ticket | "" {
   const regexpArray = line.match(
-    /(?:([a-z]+): ([0-9]+)-([0-9]+) or ([0-9]+)-([0-9]+))|([0-9,\,]+)/,
+    /(?:((?:[a-z]+ )?[a-z]+): ([0-9]+)-([0-9]+) or ([0-9]+)-([0-9]+))|([0-9,\,]+)/,
   );
   if (regexpArray === null) return "";
   const [, ruleName, r1, r2, r3, r4, fields] = regexpArray;
@@ -81,7 +81,15 @@ while (placedRules < rules.length) {
   })
 }
 
+const myTicket = validTickets.slice(0,1)[0].getFields();
+let departureTotal = 1;
+for (let i = 0; i < myTicket.length; i++) {
+  const departsub = orderedRules[i].match(/departure/);
+  if (departsub) departureTotal *= myTicket[i];
+}
 
 
 
-console.log(orderedRules);
+
+
+console.log(departureTotal);
