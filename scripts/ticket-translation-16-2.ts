@@ -42,11 +42,12 @@ const file = await fileToList("./input/16.txt", matchRegexp);
 const rules = file.filter((line) =>
   line !== "" && line.type === "fieldRule"
 ) as fieldRule[];
+
 const tickets = file.filter((line) =>
   line !== "" && line.type === "ticket"
 ) as ticket[];
 
-const validTickets = tickets.filter((ticket) => {
+const validTickets: ticket[] = tickets.filter((ticket) => {
   const fields = ticket.getFields();
   return fields
     .every(
@@ -54,16 +55,16 @@ const validTickets = tickets.filter((ticket) => {
     );
 });
 
-const rulePossibilities: Record<string,number[]>[] = rules.map((rule) => {
+const rulePossibilities: Record<string, number[]>[] = rules.map((rule) => {
   return {
     [rule.name]: validTickets.map((ticket) => {
       return ticket.getFields().map((field, index) =>
         rule.isValid(field) ? index : -1
       ).filter((index) => index > -1);
     })
-    .reduce((all, ticket) => {
-      return all.filter((field) => ticket.includes(field));
-    }),
+      .reduce((all, ticket) => {
+        return all.filter((field) => ticket.includes(field));
+      }),
   };
 });
 
@@ -71,25 +72,22 @@ const orderedRules: string[] = [];
 let placedRules = 0;
 
 while (placedRules < rules.length) {
-  rulePossibilities.forEach(rule => {
-    const possiblePlaces = Object.values(rule)[0].filter((pos) => orderedRules[pos] === undefined );
+  rulePossibilities.forEach((rule) => {
+    const possiblePlaces = Object.values(rule)[0].filter((pos) =>
+      orderedRules[pos] === undefined
+    );
     if (possiblePlaces.length === 1) {
       orderedRules[possiblePlaces[0]] = Object.keys(rule)[0];
       ++placedRules;
-      console.log(placedRules);
     }
-  })
+  });
 }
 
-const myTicket = validTickets.slice(0,1)[0].getFields();
+const myTicket = validTickets.slice(0, 1)[0].getFields();
 let departureTotal = 1;
 for (let i = 0; i < myTicket.length; i++) {
   const departsub = orderedRules[i].match(/departure/);
   if (departsub) departureTotal *= myTicket[i];
 }
-
-
-
-
 
 console.log(departureTotal);
