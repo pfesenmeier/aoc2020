@@ -54,7 +54,7 @@ const validTickets = tickets.filter((ticket) => {
     );
 });
 
-const orderedRules = rules.map((rule) => {
+const rulePossibilities: Record<string,number[]>[] = rules.map((rule) => {
   return {
     [rule.name]: validTickets.map((ticket) => {
       return ticket.getFields().map((field, index) =>
@@ -66,5 +66,22 @@ const orderedRules = rules.map((rule) => {
     }),
   };
 });
+
+const orderedRules: string[] = [];
+let placedRules = 0;
+
+while (placedRules < rules.length) {
+  rulePossibilities.forEach(rule => {
+    const possiblePlaces = Object.values(rule)[0].filter((pos) => orderedRules[pos] === undefined );
+    if (possiblePlaces.length === 1) {
+      orderedRules[possiblePlaces[0]] = Object.keys(rule)[0];
+      ++placedRules;
+      console.log(placedRules);
+    }
+  })
+}
+
+
+
 
 console.log(orderedRules);
